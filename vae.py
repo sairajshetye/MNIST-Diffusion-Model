@@ -62,6 +62,17 @@ class VAE(nn.Module):
         :return: the loss of the VAE model, a scalar tensor
         """
         recons, mu, log_var = self(x)
+        
+        N, D = x.shape
+        N, latent_size = mu.shape
+        recon_loss = torch.sum((recons - x)**2)/ x.numel()
+        
+        var = torch.exp(log_var)
+        mu_sq = mu ** 2
+        
+        kl_divergence_loss = torch.mean(torch.sum(0.5 * (var + mu_sq - 1 - log_var), dim=-1))
+        
+        return recon_loss + kl_divergence_loss
         # TODO: Implement this function
 
     def sample(self, batch_size, device):

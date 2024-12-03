@@ -57,8 +57,20 @@ class ScoreNet(nn.Module):
         device = batch.device
         # TODO: Implement the perturb
         # Below is the placeholder code you should modify
+        
+        N, D = batch.shape
+        
         noise = torch.zeros_like(batch)
-        used_sigmas = torch.ones(batch_size, dtype=torch.float, device=device)
+        
+        used_sigmas = torch.zeros((batch_size, 1), dtype = torch.float, device = device)
+        
+        for i in range(batch_size):
+            cur_sigma = self.sigmas[np.random.randint(0, len(self.sigmas))]
+            used_sigmas[i][0] = cur_sigma
+            noise[i] = torch.normal(mean = 0, std = cur_sigma, size = (1, D))
+            
+        batch.add_(noise)
+        
         return noise, used_sigmas
 
     @torch.no_grad()
@@ -110,7 +122,19 @@ class ScoreNet(nn.Module):
         :return: score loss, a scalar tensor
         """
         # TODO: Implement this function
-        pass
+        
+        x_hat = x.clone()
+        
+        noise, used_sigmas = self.perturb(x_hat)   # (N, D), (N, 1)
+        score = self.get_score(x_hat, used_sigmas) # (N, D)
+        
+        used_sigmas_sq = used_sigmas**2
+        
+        score_loss = 0.5 * ((score - ((x - x_hat)/used_sigmas_sq))**2) * used_sigmas_sq
+
+        score_loss = score_loss.mean()
+        
+        return score_loss
 
     def forward(self, x):
         """
