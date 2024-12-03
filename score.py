@@ -84,12 +84,13 @@ class ScoreNet(nn.Module):
         :param step_lr: initial step size
         :return: image trajectories (num_sigma, num_step, N, D)
         """
+        
         self.eval()
         if sigmas is None:
             sigmas = self.sigmas
 
         # In NCSNv2, the initial x is sampled from a uniform distribution instead of a Gaussian distribution
-        x = torch.rand(batch_size, img_size, device=sigmas.device)
+        x = torch.rand(batch_size, img_size, device=sigmas.device) # (N, D)
 
         traj = []
         for sigma in sigmas:
@@ -99,7 +100,14 @@ class ScoreNet(nn.Module):
             for step in range(n_steps_each):
                 score = self.get_score(x, sigma)
                 # TODO: Implement the Langevin dynamics
+                
+                z = torch.randn(batch_size, img_size, device=sigmas.device) # (1, D)
+                x_new = x + step_size * score + torch.sqrt(2*step_size) * z
+                x = x_new
+                
                 # Append the new trajectory to `traj`
+                traj.append(x_new)
+                
         traj = torch.stack(traj, dim=0).view(sigmas.size(0), n_steps_each, *x.size())
         return traj
 
