@@ -28,7 +28,11 @@ class VAE(nn.Module):
         :return: the reparameterized samples, of shape (N, latent_size)
         """
         # TODO: Implement this function
-        pass
+        N, latent_size = mu.shape
+        eps = torch.randn(N, latent_size)
+        stdev = torch.exp(0.5 * log_var)
+        z = mu + stdev * eps
+        return z
 
     def decode(self, z):
         """
