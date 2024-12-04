@@ -60,12 +60,14 @@ def train_scorenet(_):
 
     writer = SummaryWriter(FLAGS.output_dir, max_queue=1000, flush_secs=120)
 
-    if FLAGS.model_type == "unet":
-        net = UNet()
-    elif FLAGS.model_type == "simple_fc":
-        net = torch.nn.Sequential(
-          SimpleEncoder(input_size=1024, hidden_size=128, latent_size=16),
-          SimpleDecoder(latent_size=16, hidden_size=128, output_size=1024))
+    # if FLAGS.model_type == "unet":
+    #     net = UNet()
+    # elif FLAGS.model_type == "simple_fc":
+    #     net = torch.nn.Sequential(
+    #       SimpleEncoder(input_size=1024, hidden_size=128, latent_size=16),
+    #       SimpleDecoder(latent_size=16, hidden_size=128, output_size=1024))
+    
+    net = UNet()
     
     scorenet = ScoreNet(net, FLAGS.sigma_begin, FLAGS.sigma_end,
                         FLAGS.noise_level, FLAGS.sigma_type)
