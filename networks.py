@@ -76,7 +76,7 @@ class BottleNeck(nn.Module):
             nn.ReLU(),
             nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
             nn.ReLU(),
-            nn.ConvTranspose2d(out_channels, in_channels, kernel_size=2, stride=2)  # up-conv, halve e number of channels and double image size
+            nn.ConvTranspose2d(out_channels, in_channels, kernel_size=2, stride=2), # up-conv, halve e number of channels and double image size
         )
     
     def forward(self, x):
