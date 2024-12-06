@@ -90,7 +90,7 @@ class OutputBlock(nn.Module):
             nn.ReLU(),
             nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),  
             nn.ReLU(),
-            nn.Conv2d(out_channels, 1, kernel_size=1), # Convolve with 1x1 kernel
+            nn.Conv2d(out_channels, 1, kernel_size=1), 
         )
     
     def forward(self, x):
